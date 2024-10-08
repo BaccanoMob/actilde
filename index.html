@@ -3,40 +3,9 @@
 <meta name="color-scheme" content="dark light" />
 <meta name="robots" content="noindex" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>~</title>
-
-<style>
-  :root {
-    --border-radius: 1rem;
-    --color-background: #111;
-    --color-text-subtle: #888;
-    --color-text: #ddd;
-    --font-family: -apple-system, Helvetica, sans-serif;
-    --font-size: clamp(16px, 1.6vw, 18px);
-    --font-weight-bold: 700;
-    --font-weight-normal: 400;
-    --space: 1rem;
-    --transition-speed: 200ms;
-  }
-
-  @media (prefers-color-scheme: light) {
-    :root {
-      --color-background: #e8e8e8;
-      --color-text-subtle: #606060;
-      --color-text: #111;
-    }
-  }
-</style>
+<title>[ ~ ]</title>
 
 <script>
-  const CONFIG = {
-    commandPathDelimiter: '/',
-    commandSearchDelimiter: ' ',
-    defaultSearchTemplate: 'https://duckduckgo.com/?q={}',
-    openLinksInNewTab: true,
-    suggestionLimit: 4,
-  };
-
   // prettier-ignore
   const COMMANDS = new Map([
     ['a', { name: 'Alphabet', searchTemplate: '/search?q={}', suggestions: ['a/cal', 'a/drive'], url: 'https://google.com' }],
@@ -63,7 +32,41 @@
     ['0:54323', { url: 'http://localhost:54323' }],
     ['0:54324', { url: 'http://localhost:54324' }],
   ]);
+
+  const CONFIG = {
+    commandPathDelimiter: '/',
+    commandSearchDelimiter: ' ',
+    defaultSearchTemplate: 'https://duckduckgo.com/?q={}',
+    openLinksInNewTab: false,
+    suggestionLimit: 4,
+    autoFocus: true,
+  };
 </script>
+
+<style>
+  :root {
+    --border-radius: 1rem;
+    --color-background: #111;
+    --color-search: #222;
+    --color-text-subtle: #888;
+    --color-text: #eee;
+    --font-family: -apple-system, Helvetica, sans-serif;
+    --font-size: clamp(16px, 1.6vw, 18px);
+    --font-weight-bold: 700;
+    --font-weight-normal: 400;
+    --space: 1rem;
+    --transition-speed: 200ms;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      --color-background: #e8e8e8;
+      --color-search: #e8e8e8;
+      --color-text-subtle: #606060;
+      --color-text: #111;
+    }
+  }
+</style>
 
 <template id="commands-template">
   <style>
@@ -72,7 +75,7 @@
       columns: 2;
       list-style: none;
       margin: 0 auto;
-      max-width: 23rem;
+      max-width: 20rem;
       overflow: hidden;
       padding: 0;
       width: 100vw;
@@ -116,16 +119,16 @@
       color: var(--color-text);
     }
 
-    @media (min-width: 23rem) {
+    @media (min-width: 320px) {
       .commands {
         border-radius: var(--border-radius);
       }
     }
 
-    @media (min-width: 62rem) {
+    @media (min-width: 1000px) {
       .commands {
         columns: 4;
-        max-width: 44rem;
+        max-width: 55rem;
       }
     }
   </style>
@@ -174,27 +177,29 @@
 <template id="search-template">
   <style>
     input,
-    button {
+    .suggest-button {
+      appearance: none;
       -moz-appearance: none;
       -webkit-appearance: none;
       background: transparent;
       border: 0;
       display: block;
       outline: 0;
+      text-decoration: none; 
     }
 
     .dialog {
       align-items: center;
-      background: var(--color-background);
+      background: var(--color-search);
       border: none;
       display: none;
       flex-direction: column;
-      height: 100%;
       justify-content: center;
       left: 0;
       padding: 0;
-      top: 0;
-      width: 100%;
+      top: 5vh;
+      width: 75vw;
+      align-items: center;
     }
 
     .dialog[open] {
@@ -273,7 +278,7 @@
       }
     }
   </style>
-  <dialog class="dialog">
+  <dialog class="dialog" open>
     <form autocomplete="off" class="form" method="dialog" spellcheck="false">
       <input class="input" title="search" type="text" />
       <menu class="suggestions"></menu>
@@ -283,7 +288,7 @@
 
 <template id="suggestion-template">
   <li>
-    <button class="suggestion" type="button"></button>
+    <a class="suggestion suggest-button" type="button"></a>
   </li>
 </template>
 
@@ -309,7 +314,6 @@
       this.#suggestions = clone.querySelector('.suggestions');
       this.#form.addEventListener('submit', this.#onSubmit, false);
       this.#input.addEventListener('input', this.#onInput);
-      this.#suggestions.addEventListener('click', this.#onSuggestionClick);
       document.addEventListener('keydown', this.#onKeydown);
       this.shadowRoot.append(clone);
     }
@@ -390,14 +394,12 @@
     #close() {
       this.#input.value = '';
       this.#input.blur();
-      this.#dialog.close();
       this.#suggestions.innerHTML = '';
     }
 
-    #execute(query) {
-      const target = CONFIG.openLinksInNewTab ? '_blank' : '_self';
+    #execute(query, openLinksInNewTab = CONFIG.openLinksInNewTab) {
+      const target = openLinksInNewTab ? '_blank' : '_self';
       window.open(Search.#parseQuery(query).url, target, 'noopener noreferrer');
-      this.#close();
     }
 
     #focusNextSuggestion(previous = false) {
@@ -410,6 +412,7 @@
       } else {
         nextIndex = previous ? this.#suggestions.childElementCount - 1 : 0;
       }
+
 
       const next = this.#suggestions.children[nextIndex];
       if (next) next.querySelector('.suggestion').focus();
@@ -442,13 +445,17 @@
     };
 
     #onKeydown = (e) => {
-      if (!this.#dialog.open) {
+      const oq = Search.#parseQuery(this.#input.value);
+      const activeElement = this.shadowRoot.activeElement
+
+      if ((oq.query == '' || !this.#dialog.open) && CONFIG.autoFocus) {
+        console.log(CONFIG.autoFocus)
+
+        this.#close()
         this.#dialog.show();
         this.#input.focus();
 
         requestAnimationFrame(() => {
-          // close the search dialog before the next repaint if a character is
-          // not produced (e.g. if you type shift, control, alt etc.)
           if (!this.#input.value) this.#close();
         });
 
@@ -466,26 +473,42 @@
       const shift = e.shiftKey ? 'shift-' : '';
       const modifierPrefixedKey = `${alt}${ctrl}${meta}${shift}${e.key}`;
 
-      if (/^(ArrowDown|Tab|ctrl-n)$/.test(modifierPrefixedKey)) {
+      if (/^(Enter)$/.test(modifierPrefixedKey)) {
+        e.preventDefault()
+        if (activeElement?.nodeName == "INPUT") {
+          this.#execute(oq.query)
+        }
+      }
+
+      if (/^(ctrl-Enter)$/.test(modifierPrefixedKey)) {
+        if (activeElement?.nodeName == "INPUT") {
+          this.#execute(oq.query, true)
+        }
+      }
+
+      if (/^(ArrowDown|Tab)$/.test(modifierPrefixedKey)) {
         e.preventDefault();
         this.#focusNextSuggestion();
         return;
       }
 
-      if (/^(ArrowUp|ctrl-p|shift-Tab)$/.test(modifierPrefixedKey)) {
+      if (/^(ArrowUp|shift-Tab)$/.test(modifierPrefixedKey)) {
         e.preventDefault();
         this.#focusNextSuggestion(true);
+        return;
+      }
+
+      if (/^(ctrl-Control|shift-Shift|ctrl-shift-Shift|ctrl-shift-Enter|ctrl-Enter|shift-Enter|shift-Tab|Tab|ArrowUp|ArrowDown|ArrowLeft|ArrowRight)$/.test(modifierPrefixedKey)) {
+        return;
+      }
+
+      if (activeElement?.nodeName != "INPUT" && CONFIG.autoFocus) {
+        this.#input.focus()
       }
     };
 
     #onSubmit = () => {
       this.#execute(this.#input.value);
-    };
-
-    #onSuggestionClick = (e) => {
-      const ref = e.target.closest('.suggestion');
-      if (!ref) return;
-      this.#execute(ref.dataset.suggestion);
     };
 
     #renderSuggestions(suggestions, query) {
@@ -498,6 +521,7 @@
         const ref = clone.querySelector('.suggestion');
         ref.dataset.index = index;
         ref.dataset.suggestion = suggestion;
+        ref.href = Search.#parseQuery(suggestion).url
         const escapedQuery = Search.#escapeRegexCharacters(query);
         const matched = suggestion.match(new RegExp(escapedQuery, 'i'));
 
