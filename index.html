@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <meta charset="utf-8" />
 <meta name="color-scheme" content="dark light" />
 <meta name="robots" content="noindex" />
@@ -278,7 +278,7 @@
     }
   </style>
   <dialog class="dialog" open>
-    <form autocomplete="off" class="form" method="dialog" spellcheck="false">
+    <form autocomplete="off" class="form" spellcheck="false">
       <input class="input" title="search" type="text" />
       <menu class="suggestions"></menu>
     </form>
@@ -287,7 +287,11 @@
 
 <template id="suggestion-template">
   <li>
-    <a class="suggestion suggest-button" rel="noopener noreferrer" type="button"></a>
+    <a
+      class="suggestion suggest-button"
+      rel="noopener noreferrer"
+      type="button"
+    ></a>
   </li>
 </template>
 
@@ -304,14 +308,19 @@
 
     constructor() {
       super();
-      // this.attachShadow({ mode: 'open' });
       const template = document.getElementById('search-template');
       const clone = template.content.cloneNode(true);
       this.#dialog = clone.querySelector('.dialog');
       this.#form = clone.querySelector('.form');
       this.#input = clone.querySelector('.input');
       this.#suggestions = clone.querySelector('.suggestions');
-      this.#form.addEventListener('submit', this.#onSubmit, false);
+      this.#form.addEventListener(
+        'submit',
+        function (event) {
+          event.preventDefault();
+        },
+        false
+      );
       this.#input.addEventListener('input', this.#onInput);
       document.addEventListener('keydown', this.#onKeydown);
       this.append(clone);
@@ -497,10 +506,6 @@ activeElement?.nodeName != 'INPUT'
 ) {
         this.#input.focus();
       }
-    };
-
-    #onSubmit = () => {
-      this.#execute(this.#input.value);
     };
 
     #renderSuggestions(suggestions, query) {
