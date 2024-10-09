@@ -184,7 +184,7 @@
       border: 0;
       display: block;
       outline: 0;
-      text-decoration: none; 
+      text-decoration: none;
     }
 
     .dialog {
@@ -376,10 +376,14 @@
         return { query, url };
       }
 
-      if ((CONFIG.commandCaseSensitive || query == altQuery) && COMMANDS.has(query)) return this.#getCommands(query); // in lowercase or case sensitive
-      // TODO if both? 
-      // if (COMMANDS.has(query) && ) return this.#getCommands(query);
-      if (COMMANDS.has(altQuery)) return this.#getCommands(altQuery); // in uppercase
+      //prettier-ignore
+      if ((CONFIG.commandCaseSensitive || query == altQuery) && COMMANDS.has(query)) return this.#getCommands(query);
+      // in lowercase or case sensitive
+
+      // if (COMMANDS.has(query) && COMMANDS.has(altQuery)) return this.#getCommands(query); // IF needed to combine two commands like 'a' with 'A'
+
+      if (COMMANDS.has(altQuery)) return this.#getCommands(altQuery);
+      // in uppercase
 
       let splitBy = CONFIG.commandSearchDelimiter;
       const [searchKey, rawSearch] = query.split(new RegExp(`${splitBy}(.*)`));
@@ -469,8 +473,8 @@
 
       if (!['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) {
         combination.push(e.key);
-        }
-        
+      }
+
       const keyCombination = combination.join('+');
 
       if (keyCombination == 'Ctrl+Enter') {
@@ -494,16 +498,16 @@
       }
 
       if (['ArrowDown', 'Tab'].includes(keyCombination)) {
-e.preventDefault();
+        e.preventDefault();
         this.#focusNextSuggestion();
         return;
       }
 
       if (
         !['Enter', 'Alt', 'Ctrl'].some((key) => keyCombination.includes(key)) &&
-keyCombination != 'Shift' &&
-activeElement?.nodeName != 'INPUT'
-) {
+        keyCombination != 'Shift' &&
+        activeElement?.nodeName != 'INPUT'
+      ) {
         this.#input.focus();
       }
     };
@@ -518,7 +522,9 @@ activeElement?.nodeName != 'INPUT'
         const ref = clone.querySelector('.suggestion');
         ref.dataset.index = index;
         ref.dataset.suggestion = suggestion;
-        ref.href = Search.#parseQuery(suggestion).url;
+        if (COMMANDS.has(suggestion)) {
+          ref.href = COMMANDS.get(suggestion).url;
+        } else ref.href = Search.#parseQuery(suggestion).url;
         const escapedQuery = Search.#escapeRegexCharacters(query);
         const matched = suggestion.match(new RegExp(escapedQuery, 'i'));
 
