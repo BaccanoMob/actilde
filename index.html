@@ -39,6 +39,7 @@
     defaultSearchTemplate: 'https://duckduckgo.com/?q={}',
     openLinksInNewTab: false,
     suggestionLimit: 4,
+    commandCaseSensitive: false,
   };
 </script>
 
@@ -352,18 +353,24 @@
       return /^((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)$/i.test(s);
     }
 
+    static #getCommands(query) {
+      const { key, url, suggestions } = COMMANDS.get(query);
+      return { key, query, url, suggestions };
+    }
+
     static #parseQuery = (raw) => {
       const query = raw.trim();
+      const altQuery = raw.trim().toLowerCase();
 
       if (this.#isUrl(query)) {
         const url = this.#hasProtocol(query) ? query : `https://${query}`;
         return { query, url };
       }
 
-      if (COMMANDS.has(query)) {
-        const { key, url } = COMMANDS.get(query);
-        return { key, query, url };
-      }
+      if ((CONFIG.commandCaseSensitive || query == altQuery) && COMMANDS.has(query)) return this.#getCommands(query); // in lowercase or case sensitive
+      // TODO if both? 
+      // if (COMMANDS.has(query) && ) return this.#getCommands(query);
+      if (COMMANDS.has(altQuery)) return this.#getCommands(altQuery); // in uppercase
 
       let splitBy = CONFIG.commandSearchDelimiter;
       const [searchKey, rawSearch] = query.split(new RegExp(`${splitBy}(.*)`));
