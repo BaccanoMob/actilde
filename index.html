@@ -304,7 +304,7 @@
 
     constructor() {
       super();
-      this.attachShadow({ mode: 'open' });
+      // this.attachShadow({ mode: 'open' });
       const template = document.getElementById('search-template');
       const clone = template.content.cloneNode(true);
       this.#dialog = clone.querySelector('.dialog');
@@ -314,7 +314,7 @@
       this.#form.addEventListener('submit', this.#onSubmit, false);
       this.#input.addEventListener('input', this.#onInput);
       document.addEventListener('keydown', this.#onKeydown);
-      this.shadowRoot.append(clone);
+      this.append(clone);
     }
 
     static #escapeRegexCharacters(s) {
@@ -402,7 +402,7 @@
     }
 
     #focusNextSuggestion(previous = false) {
-      const active = this.shadowRoot.activeElement;
+      const active = document.activeElement;
       let nextIndex;
 
       if (active.dataset.index) {
@@ -445,11 +445,9 @@
 
     #onKeydown = (e) => {
       const oq = Search.#parseQuery(this.#input.value);
-      const activeElement = this.shadowRoot.activeElement
+      const activeElement = this.activeElement
 
       if ((oq.query == '' || !this.#dialog.open) && CONFIG.autoFocus) {
-        console.log(CONFIG.autoFocus)
-
         this.#close()
         this.#dialog.show();
         this.#input.focus();
