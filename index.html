@@ -437,7 +437,6 @@
     };
 
     #onKeydown = (e) => {
-      const oq = Search.#parseQuery(this.#input.value);
       const activeElement = document.activeElement;
 
       if (e.key === 'Escape') {
@@ -460,14 +459,14 @@
 
       if (keyCombination == 'Ctrl+Enter') {
         if (activeElement?.nodeName == 'INPUT') {
-          this.#execute(oq.query, true);
+          this.#execute(this.#input.value, true);
         }
         return;
       }
 
       if (keyCombination == 'Enter') {
         if (activeElement?.nodeName == 'INPUT') {
-        this.#execute(oq.query);
+          this.#execute(this.#input.value);
         }
         return;
       }
