@@ -150,7 +150,6 @@
   class Commands extends HTMLElement {
     constructor() {
       super();
-      this.attachShadow({ mode: 'open' });
       const template = document.getElementById('commands-template');
       const clone = template.content.cloneNode(true);
       const commands = clone.querySelector('.commands');
@@ -167,7 +166,7 @@
         commands.append(clone);
       }
 
-      this.shadowRoot.append(clone);
+      this.append(clone);
     }
   }
 
