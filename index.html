@@ -421,11 +421,6 @@
     #onInput = async () => {
       const oq = Search.#parseQuery(this.#input.value);
 
-      if (!oq.query) {
-        this.#close();
-        return;
-      }
-
       let suggestions = COMMANDS.get(oq.query)?.suggestions ?? [];
 
       if (oq.search && suggestions.length < CONFIG.suggestionLimit) {
