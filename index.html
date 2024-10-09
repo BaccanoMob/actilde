@@ -411,7 +411,6 @@
         nextIndex = previous ? this.#suggestions.childElementCount - 1 : 0;
       }
 
-
       const next = this.#suggestions.children[nextIndex];
       if (next) next.querySelector('.suggestion').focus();
       else this.#input.focus();
@@ -439,7 +438,7 @@
 
     #onKeydown = (e) => {
       const oq = Search.#parseQuery(this.#input.value);
-      const activeElement = document.activeElement
+      const activeElement = document.activeElement;
 
       if (e.key === 'Escape') {
         this.#close();
@@ -453,40 +452,44 @@
       if (e.altKey) combination.push('Alt');
       if (e.metaKey) combination.push('Meta');
 
-      if (!(['Control', 'Shift', 'Alt', 'Meta'].includes(e.key))) {
+      if (!['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) {
         combination.push(e.key);
         }
         
-      const keyCombination = combination.join('+')
+      const keyCombination = combination.join('+');
 
-      if (keyCombination == "Ctrl+Enter") {
-        if (activeElement?.nodeName == "INPUT") {
-          this.#execute(oq.query, true)
+      if (keyCombination == 'Ctrl+Enter') {
+        if (activeElement?.nodeName == 'INPUT') {
+          this.#execute(oq.query, true);
         }
         return;
       }
 
-      if (keyCombination == "Enter") {
-        if (activeElement?.nodeName == "INPUT") {
-        this.#execute(oq.query)
+      if (keyCombination == 'Enter') {
+        if (activeElement?.nodeName == 'INPUT') {
+        this.#execute(oq.query);
         }
         return;
       }
 
-      if (["ArrowUp" ,"Shift+Tab"].includes(keyCombination)) {
+      if (['ArrowUp', 'Shift+Tab'].includes(keyCombination)) {
         e.preventDefault();
         this.#focusNextSuggestion(true);
         return;
       }
 
-      if (["ArrowDown", "Tab"].includes(keyCombination)) {
+      if (['ArrowDown', 'Tab'].includes(keyCombination)) {
 e.preventDefault();
         this.#focusNextSuggestion();
         return;
       }
 
-      if (!(['Enter', 'Alt', 'Ctrl'].some(key => keyCombination.includes(key))) && keyCombination != "Shift" && activeElement?.nodeName != "INPUT") {
-        this.#input.focus()
+      if (
+        !['Enter', 'Alt', 'Ctrl'].some((key) => keyCombination.includes(key)) &&
+keyCombination != 'Shift' &&
+activeElement?.nodeName != 'INPUT'
+) {
+        this.#input.focus();
       }
     };
 
@@ -504,7 +507,7 @@ e.preventDefault();
         const ref = clone.querySelector('.suggestion');
         ref.dataset.index = index;
         ref.dataset.suggestion = suggestion;
-        ref.href = Search.#parseQuery(suggestion).url
+        ref.href = Search.#parseQuery(suggestion).url;
         const escapedQuery = Search.#escapeRegexCharacters(query);
         const matched = suggestion.match(new RegExp(escapedQuery, 'i'));
 
