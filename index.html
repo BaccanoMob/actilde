@@ -476,6 +476,7 @@
         if (activeElement?.nodeName == "INPUT") {
           this.#execute(oq.query, true)
         }
+        return;
       }
 
       if (/^(ArrowDown|Tab)$/.test(modifierPrefixedKey)) {
