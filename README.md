@@ -85,7 +85,17 @@ Copy paste into command lines
 ['', {suggestions: ['', '']}],
 ```
 
-I may replace `searchTemplate` into something else (not 100% sure, atleast not in the foreseeable future).
+- Search Templates, some examples,
+    - For google search URL, `https://www.google.com/search?q={}`, is broken down to url as `https://www.google.com` and searchTemplate as `/search?q={}`. 
+    
+    - For latest selfhosted reddit search, it will be `https://www.reddit.com` and `/r/selfhosted/search/?q={}&sort=new`
+    
+    The searchTemplates vary with website, purpose and so on.
+
+- Path, some example,
+    - Similar to search but you type whats after the url. You can also use it like search urls with `/search?q=testing 123` to search.
+    - For github, `url` should be `https://github.com` for a command say `g`. So, to get to this repo, you search for `g/BaccanoMob/actilde` which will lead to `https://github.com/BaccanoMob/actilde`.
+    - Its also useful for selfhosted instances which use subdirectories rather than subdomain to host services.
 
 ## To infinity ∞
 
