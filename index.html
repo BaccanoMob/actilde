@@ -474,10 +474,10 @@
       const modifierPrefixedKey = `${alt}${ctrl}${meta}${shift}${e.key}`;
 
       if (/^(Enter)$/.test(modifierPrefixedKey)) {
-        e.preventDefault()
         if (activeElement?.nodeName == "INPUT") {
           this.#execute(oq.query)
         }
+        return;
       }
 
       if (/^(ctrl-Enter)$/.test(modifierPrefixedKey)) {
