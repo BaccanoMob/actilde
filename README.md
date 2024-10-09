@@ -2,7 +2,8 @@
 
 Actilde is a minimal browser homepage with a search box for mobile friendly suggestions. (Also apparently I also made it friendly for Asian Languages without me knowing).
 
-Name comes from Active (search box) + Tilde.
+> [!NOTE]
+> Name comes from Active (search box) + Tilde.
 
 ## Changelog
 
@@ -18,26 +19,19 @@ Name comes from Active (search box) + Tilde.
     - <kbd>Shift</kbd>+<kbd>Enter</kbd> - Open in new window.
     - <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd> - Open in a new tab and moves to the new tab.
 - You can only open in a new tab from search box with <kbd>Ctrl</kbd>+<kbd>Enter</kbd>. <kbd>Enter</kbd> should have the default. You can not have one in a new window (at least in my index.html).
-- Has auto focus to search box when typed. Unfortunately, for Asian Languages, you need to disable this in CONFIG (`autoFocus` should be `false`).
-- Docker compose file so you can deploy it in your server (without wondering how to set it like me).
+- Has auto focus to search box when typed. For Asian Languages (any language with IME), you need to press <kbd>Arrow Keys</kbd> or <kbd>Delete</kbd> first to focus to search box beforehand or the first character will be in english.
+- Docker compose file so you can deploy it in your server (without wondering 'how can I set it up?' like me).
 
-## Why no autofocus for Asian languages?
+## IME Friendly?
 
-Well in the original tilde, to open search box, 1 key down is needed. So when the focus is triggered, the IME moves to the next letter. This can not be fixed since it relates to OS as the IME is exiting.
+Probably, since you need one key down to focus on the search box, I recommend pressing <kbd>Arrow Keys</kbd> (technically any button which does not serve a purpose for typing, like Volume Up or Mute can also be used to focus if needed). This is prolly the best I can make it to work well.
 
-With Actilde, you can disable autofocus so you will need to manually click the search box to type in. Therefore, IME will work properly from get go when clicked on the search box. This is not possible with original tilde as the search box is hidden by default and on 1 key down is required to open the search box.
-
-## Will I try to implement autofocus for all languages?
-
-Prolly whenever I find time to look into it. I plan to add a dummy prefix/s so suggestions should ignore it when it is typed. 
-
-Mostly to address due to my keyboard on Android auto capitalizes the first letter (which I need for other uses/apps) and caps are not supported yet to give suggestions (since original tilde is desktop centric, it is not a major issue).
-
-Since this is also a first keydown problem, I plan to merge both issues into one so autofocus could be enabled at all times.
+> [!IMPORTANT]  
+> IME needs the cursor on search box first. Remember to use the arrows to focus, if the search box is out of focus at any point before typing the query.
 
 ## The search box disappeared when I clicked/entered something?
 
-This can happen when opening links. I tried my best to fix it as much as could (That's why my `onKeydown` function looks bigger than original and it should be fixed for most cases by now).
+This can happen when opening from search box. I tried my best to fix it as much as could.
 
 Well, if you come across it, you need to press <kbd>Escape</kbd> (for desktops/with keyboard) or reload (for any devices) to get the search box back.
 
@@ -45,7 +39,17 @@ Well, if you come across it, you need to press <kbd>Escape</kbd> (for desktops/w
 
 You get the docker compose file in this repo as well, modify it to run Actilde to your needs in your network.
 
-It is also possible to run with `docker run` but I do not suggest it since this requires a volume binding and you need to remember the full command if you do start after you kill the container. Also, I find docker more manageable when using docker compose. But the docker run command is below if anyone still prefers it.
+It is also possible to run with `docker run` but I do not suggest it since this requires a volume binding and you need to remember the full command if you do start after you kill the container. Also, I find docker more manageable when using docker compose. 
+
+```sh
+# Start with 
+docker compose up -d
+
+# Stop with
+docker compose down
+```
+
+The docker run command is below if anyone still prefers it.
 
 ```sh
 docker run -d -p 8080:80 -v /path/to/index.html:/usr/share/nginx/html/index.html --name actilde nginx:stable-alpine-slim

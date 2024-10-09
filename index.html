@@ -39,7 +39,6 @@
     defaultSearchTemplate: 'https://duckduckgo.com/?q={}',
     openLinksInNewTab: false,
     suggestionLimit: 4,
-    autoFocus: true,
   };
 </script>
 
@@ -442,60 +441,51 @@
       const oq = Search.#parseQuery(this.#input.value);
       const activeElement = document.activeElement
 
-      if ((oq.query == '' || !this.#dialog.open) && CONFIG.autoFocus) {
-        this.#close()
-        this.#dialog.show();
-        this.#input.focus();
-
-        requestAnimationFrame(() => {
-          if (!this.#input.value) this.#close();
-        });
-
-        return;
-      }
-
       if (e.key === 'Escape') {
         this.#close();
         return;
       }
 
-      const alt = e.altKey ? 'alt-' : '';
-      const ctrl = e.ctrlKey ? 'ctrl-' : '';
-      const meta = e.metaKey ? 'meta-' : '';
-      const shift = e.shiftKey ? 'shift-' : '';
-      const modifierPrefixedKey = `${alt}${ctrl}${meta}${shift}${e.key}`;
+      let combination = [];
 
-      if (/^(Enter)$/.test(modifierPrefixedKey)) {
-        if (activeElement?.nodeName == "INPUT") {
-          this.#execute(oq.query)
+      if (e.ctrlKey) combination.push('Ctrl');
+      if (e.shiftKey) combination.push('Shift');
+      if (e.altKey) combination.push('Alt');
+      if (e.metaKey) combination.push('Meta');
+
+      if (!(['Control', 'Shift', 'Alt', 'Meta'].includes(e.key))) {
+        combination.push(e.key);
         }
-        return;
-      }
+        
+      const keyCombination = combination.join('+')
 
-      if (/^(ctrl-Enter)$/.test(modifierPrefixedKey)) {
+      if (keyCombination == "Ctrl+Enter") {
         if (activeElement?.nodeName == "INPUT") {
           this.#execute(oq.query, true)
         }
         return;
       }
 
-      if (/^(ArrowDown|Tab)$/.test(modifierPrefixedKey)) {
-        e.preventDefault();
-        this.#focusNextSuggestion();
+      if (keyCombination == "Enter") {
+        if (activeElement?.nodeName == "INPUT") {
+        this.#execute(oq.query)
+        }
         return;
       }
 
-      if (/^(ArrowUp|shift-Tab)$/.test(modifierPrefixedKey)) {
+      if (["ArrowUp" ,"Shift+Tab"].includes(keyCombination)) {
         e.preventDefault();
         this.#focusNextSuggestion(true);
         return;
       }
 
-      if (/^(ctrl-Control|shift-Shift|ctrl-shift-Shift|ctrl-shift-Enter|ctrl-Enter|shift-Enter|shift-Tab|Tab|ArrowUp|ArrowDown|ArrowLeft|ArrowRight)$/.test(modifierPrefixedKey)) {
+      if (["ArrowDown", "Tab"].includes(keyCombination)) {
+e.preventDefault();
+        this.#focusNextSuggestion();
         return;
       }
 
-      if (activeElement?.nodeName != "INPUT" && CONFIG.autoFocus) {
+      if (!(['Enter', 'Alt', 'Ctrl'].some(key => keyCombination.includes(key))) && keyCombination != "Shift" && activeElement?.nodeName != "INPUT") {
         this.#input.focus()
       }
     };
