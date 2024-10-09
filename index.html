@@ -445,7 +445,7 @@
 
     #onKeydown = (e) => {
       const oq = Search.#parseQuery(this.#input.value);
-      const activeElement = this.activeElement
+      const activeElement = document.activeElement
 
       if ((oq.query == '' || !this.#dialog.open) && CONFIG.autoFocus) {
         this.#close()
