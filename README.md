@@ -2,7 +2,7 @@
 
 Actilde is a minimal browser homepage with a search box for mobile friendly suggestions. (Also apparently I also made it friendly for Asian Languages without me knowing).
 
-> [!NOTE]
+> [!TIP]
 > Name comes from Active (search box) + Tilde.
 
 ## Changes/differences from Tilde 
@@ -21,7 +21,29 @@ Actilde is a minimal browser homepage with a search box for mobile friendly sugg
     - <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd> - Open in a new tab and moves to the new tab.
 - You can only open in a new tab from search box with <kbd>Ctrl</kbd>+<kbd>Enter</kbd>. <kbd>Enter</kbd> should have the default. You can not have one in a new window (at least in my index.html).
 - Has auto focus to search box when typed. For Asian Languages (any language with IME), you need to press <kbd>Arrow Keys</kbd> or <kbd>Delete</kbd> first to focus to search box beforehand or the first character will be in english.
-- Docker compose file so you can deploy it in your server (without wondering 'how can I set it up?' like me).
+- Docker compose file so you can deploy it in your server (without wondering 'how can I host this?' like me).
+- Cache actilde so it can be used outside home network/VPN (requires https).
+- PWA support (requires https and this came as an add-on to cache storage)
+
+## Cache First
+
+This requires https to work. So need to have a domain setup. Personally I recommend a provider like duckdns to get a subdomain. Point that to your IP of the server in your Wifi/VPN. By IP, I do not mean public IP, but the local IP. Setting the local IP is safe. No one (even if they have same local IP) in another home/work can access your server. The only ones that have access will be the devices in your Wifi/VPN.
+
+For windows check in the Wifi settings. For linux run `hostname -I` and its usually the first IP address.
+
+> [!WARNING]  
+> With nable `useCacheFirst`, if you would not be editing the `COMMANDS` anytime soon. You will need to manually delete the cache to see the recent changes.
+
+> [!TIP]
+> Browsing in Incognito will not cache anything so `useCacheFirst` will not matter.
+
+## Is PWA actually useful?
+
+It is not but you can have try it out.
+
+> [!IMPORTANT]
+> You can not open links in a new tab or incognito in PWA.
+
 
 ## IME Friendly?
 
@@ -29,6 +51,16 @@ Probably, since you need one key down to focus on the search box, I recommend pr
 
 > [!IMPORTANT]  
 > IME needs the cursor on search box first. Remember to use the arrows to focus, if the search box is out of focus at any point before typing the query.
+
+## Icons
+
+Generated from [icon.kitchen](https://icon.kitchen/) (with only for web option in the headers).
+
+> [!NOTE]
+> If you do use this icon generator for other projects, the README in that zip will have necessary HTML tags to include.
+
+> [!TIP]
+> `favicon.ico` must be in the root directory for it to display properly.
 
 ## Docker
 
@@ -48,6 +80,8 @@ The docker run command is below if anyone still prefers it.
 
 ```sh
 docker run -d -p 8080:80 -v /path/to/index.html:/usr/share/nginx/html/index.html --name actilde nginx:stable-alpine-slim
+
+docker run -d -p 8080:80 -v /path/to/site:/usr/share/nginx/html --name actilde nginx:stable-alpine-slim
 ```
 
 Also, any edits in index.html will auto update live so no need to restart containers for changes. Run once but edit as many times you need.

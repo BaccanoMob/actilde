@@ -3,7 +3,8 @@ services:
     image: nginx:stable-alpine-slim
     container_name: actilde
     volumes:
-      - ./index.html:/usr/share/nginx/html/index.html
+      # - ./index.html:/usr/share/nginx/html/index.html
+      - ./site:/usr/share/nginx/html
     restart: unless-stopped
     ports:
       - 8080:80
