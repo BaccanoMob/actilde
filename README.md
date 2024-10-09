@@ -5,12 +5,13 @@ Actilde is a minimal browser homepage with a search box for mobile friendly sugg
 > [!NOTE]
 > Name comes from Active (search box) + Tilde.
 
-## Changelog
+## Changes/differences from Tilde 
 
 - Active search box so mobiles devices can use suggestions. (The main goal)
 - Added `appearance: none;` since VSCode was telling `-moz-appearance` and `-webkit-appearance` to add it for compatibility.
 - Changed title from `~` to `[ ~ ]` to have the ~ with within a box.
 - Removed (<kbd>Ctrl</kbd>+<kbd>n</kbd> and <kbd>Ctrl</kbd>+<kbd>p</kbd>) bindings. Well, <kbd>Ctrl</kbd>+<kbd>n</kbd> is for new tab so I prolly will never use this.
+- Commands can be configured to be case insensitive (that, `a` command and `A` command will be same). This fixes my issue with auto caps when using from android. `commandCaseSensitive` should be set to `false` (default value). Can be set to `true` to have more range of commands.
 - Change number of columns to 4 in home page. (5+ columns gives a ghost column at the end with Actilde and there was no centering)
 - Moved script section for commands and CONFIG towards the top of the file. (Just because I did not want to scroll a long file, when I want to change the commands)
 - Suggestions are now right clickable and long pressable (for mobiles). (Changed from them button to hyperlinks)
@@ -28,12 +29,6 @@ Probably, since you need one key down to focus on the search box, I recommend pr
 
 > [!IMPORTANT]  
 > IME needs the cursor on search box first. Remember to use the arrows to focus, if the search box is out of focus at any point before typing the query.
-
-## The search box disappeared when I clicked/entered something?
-
-This can happen when opening from search box. I tried my best to fix it as much as could.
-
-Well, if you come across it, you need to press <kbd>Escape</kbd> (for desktops/with keyboard) or reload (for any devices) to get the search box back.
 
 ## Docker
 
