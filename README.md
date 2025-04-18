@@ -25,6 +25,7 @@ Actilde is a minimal browser homepage with a search box for mobile friendly sugg
 - Cache actilde so it can be used outside home network/VPN (requires https).
 - PWA support (requires https and this came as an add-on to cache storage).
 - Uses query parameter to set number of columns in dashboard as well as the design. (check below on how to)
+- Suggestion are automatically taken from COMMANDS and duckduckgo suggestions are removed. Therefore, no need to manually specify the suggestions in this fork unlike original Tilde. Note that only the duckduckgo suggestions are removed, you can still search with duckduckgo for non COMMAND text.
 
 ## Cache First
 
@@ -95,37 +96,30 @@ Check original [repo](https://github.com/xvvvyz/tilde)
 
 Copy paste into command lines
 
-- Hidden link. [url only (no display or suggestion)]
+- Hidden link. [url only (no display)]
 ```js
 ['', { url: '' }],
 ```
 
-- Link in displayed in homepage. [url (display command)]
+- Link in displayed in homepage. [url (displays command)]
 ```js
 ['', { name: '', url: '' }],
 ```
 
-- Link in displayed in homepage. [url (display command) + suggestion]
+- Link in displayed in homepage. [url (displays command) with search template]
 ```js
-['', { name: '', suggestions: ['', ''], url: '' }],
+['', { name: '', url: '', searchTemplate: '' }],
 ```
 
-- Hidden url with suggestions. [url (no display) + suggestion]
-```js
-['', { suggestions: ['', ''], url: '' }],
-```
-
-- Suggestion only. [suggestions only (no display)]
-```js
-['', {suggestions: ['', '']}],
-```
+> [!IMPORTANT]
+> Original Tilde uses suggestions, but it is removed in this fork. Even if suggestions are specified, it will not be utilized in this fork.
 
 - Search Templates, some examples,
-    - For google search URL, `https://www.google.com/search?q={}`, is broken down to url as `https://www.google.com` and searchTemplate as `/search?q={}`. 
+    - For google search URL, `https://www.google.com/search?q={}`, is broken down to url as `https://www.google.com` and searchTemplate as `/search?q={}`. To search "actilde" in google according to index.html in this repo, you wil type `a actilde`.
     
-    - For latest selfhosted reddit search, it will be `https://www.reddit.com` and `/r/selfhosted/search/?q={}&sort=new`
+    - For searching latest in selfhosted subreddit, it will be `https://www.reddit.com` as url and `/r/selfhosted/search/?q={}&sort=new` as searchTemplate.
     
-    The searchTemplates vary with website, purpose and so on.
+    The searchTemplates vary with website, purpose and so on. 
 
 - Path, some example,
     - Similar to search but you type whats after the url. You can also use it like search urls with `/search?q=testing 123` to search.
