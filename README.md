@@ -23,7 +23,8 @@ Actilde is a minimal browser homepage with a search box for mobile friendly sugg
 - Has auto focus to search box when typed. For Asian Languages (any language with IME), you need to press <kbd>Arrow Keys</kbd> or <kbd>Delete</kbd> first to focus to search box beforehand or the first character will be in english.
 - Docker compose file so you can deploy it in your server (without wondering 'how can I host this?' like me).
 - Cache actilde so it can be used outside home network/VPN (requires https).
-- PWA support (requires https and this came as an add-on to cache storage)
+- PWA support (requires https and this came as an add-on to cache storage).
+- Uses query parameter to set number of columns in dashboard as well as the design. (check below on how to)
 
 ## Cache First
 
@@ -130,6 +131,31 @@ Copy paste into command lines
     - Similar to search but you type whats after the url. You can also use it like search urls with `/search?q=testing 123` to search.
     - For github, `url` should be `https://github.com` for a command say `g`. So, to get to this repo, you search for `g/BaccanoMob/actilde` which will lead to `https://github.com/BaccanoMob/actilde`.
     - Its also useful for selfhosted instances which use subdirectories rather than subdomain to host services.
+ 
+## Setting query parameters
+
+Now actilde allows you to use 2 query parameters: `design` and `columns`.
+
+`design` either takes 1 (default value) or 2. 
+
+Design 1 is more of the original design.
+
+![image](https://github.com/user-attachments/assets/05a1ea7c-b09f-4564-a692-a2d967b789de)
+
+Design 2 is similar to 1 but it only shows key values and reveals the name only on hover (current design in OG Tilde).
+
+![image](https://github.com/user-attachments/assets/478f3a2d-a6df-4438-a85e-8f5190eef301)
+
+`columns` takes a numerical value to set the number of columns in commands dashboard. The default is 5 and can be modified in `index.html` and can be dynamically set via query parameter.
+
+Some examples on how to set:
+    - <actilde_url>/?columns=3 => sets 3 columns with design 1
+    - <actilde_url>/?design=2 => sets design 2 and default columns
+    - <actilde_url>/?columns=3&design=2 => sets 3 columns with design 2
+    - <actilde_url>/?design=2&columns=3 => also sets 3 columns with design 2 (changed the order of queries)
+    - <actilde_url> => default design and columns
+
+This is useful when you want to set the columns/design based on your device. For example, for mobile have lower columns via query and leave it the defaults.
 
 ## To infinity ∞
 
