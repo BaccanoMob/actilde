@@ -11,27 +11,27 @@
 <script>
   // prettier-ignore
   const COMMANDS = new Map([
-    ['a', { name: 'Alphabet', searchTemplate: '/search?q={}', suggestions: ['a/cal', 'a/drive'], url: 'https://google.com' }],
+    ['a', { name: 'Alphabet', searchTemplate: '/search?q={}', url: 'https://google.com' }],
     ['a/cal', { url: 'https://calendar.google.com' }],
     ['a/drive', { url: 'https://drive.google.com/drive/u/0/my-drive' }],
     ['c', { name: 'Cloudflare', url: 'https://dash.cloudflare.com' }],
     ['f', { name: 'Figma', url: 'https://www.figma.com' }],
-    ['g', { name: 'GitHub', searchTemplate: '/search?q={}', suggestions: ['g/copilot', 'g/trending'], url: 'https://github.com' }],
+    ['g', { name: 'GitHub', searchTemplate: '/search?q={}', url: 'https://github.com' }],
     ['i', { name: 'Intuit', url: 'https://selfemployed.intuit.com/home' }],
     ['o', { name: 'OpenAI', url: 'https://chatgpt.com' }],
-    ['p', { name: 'Proton', searchTemplate: '/u/0/all-mail#keyword={}', suggestions: ['p/drive', 'p/pass'], url: 'https://mail.proton.me/u/0/inbox' }],
+    ['p', { name: 'Proton', searchTemplate: '/u/0/all-mail#keyword={}', url: 'https://mail.proton.me/u/0/inbox' }],
     ['p/drive', { url: 'https://drive.proton.me/u/0/' }],
     ['p/pass', { url: 'https://pass.proton.me/u/0/' }],
     ['s', { name: 'Supabase', url: 'https://supabase.com/dashboard/projects' }],
-    ['t', { name: 'TickTick', suggestions: ['t/habits', 't/pomo'], url: 'https://ticktick.com/webapp/#q/today/tasks' }],
+    ['t', { name: 'TickTick', url: 'https://ticktick.com/webapp/#q/today/tasks' }],
     ['t/habits', { url: 'https://ticktick.com/webapp/#q/all/habit' }],
     ['t/pomo', { url: 'https://ticktick.com/webapp/#focus' }],
     ['v', { name: 'Vercel', url: 'https://vercel.com/dashboard' }],
-    ['x', { name: 'xvvvyz', suggestions: ['x/torrent', 'x/proxy', 'x/droplet'], url: 'https://xvvvyz.xyz' }],
+    ['x', { name: 'xvvvyz', url: 'https://xvvvyz.xyz' }],
     ['x/droplet', { url: 'https://cloud.digitalocean.com/projects/50ffcff7-ad65-40e3-af88-3cbc5a38cf99/resources' }],
     ['x/proxy', { url: 'https://proxy.xvvvyz.xyz' }],
     ['x/torrent', { url: 'https://torrent.xvvvyz.xyz' }],
-    ['0', { name: 'local', suggestions: ['0:54323', '0:54324'], url: 'http://localhost:3000' }],
+    ['0', { name: 'local', url: 'http://localhost:3000' }],
     ['0:54323', { url: 'http://localhost:54323' }],
     ['0:54324', { url: 'http://localhost:54324' }],
   ]);
@@ -41,8 +41,8 @@
     commandSearchDelimiter: ' ',
     defaultSearchTemplate: 'https://duckduckgo.com/?q={}',
     openLinksInNewTab: false,
-    suggestionLimit: 4,
-    commandCaseSensitive: false,
+    // suggestionLimit: 4,
+    commandIsCaseSensitive: false,
     useCacheFirst: true,
 
     defaultColumns: 5,
@@ -252,7 +252,6 @@
       const commandTemplate = document.getElementById('command-template');
 
       if (columns) {
-        console.log(columns)
         commands.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
       } else {
         commands.style.gridTemplateColumns = `repeat(${CONFIG.defaultColumns}, 1fr)`;
@@ -389,11 +388,7 @@
 
 <template id="suggestion-template">
   <li>
-    <a
-      class="suggestion suggest-button"
-      rel="noopener noreferrer"
-      type="button"
-    ></a>
+    <a class="suggestion suggest-button" rel="noopener noreferrer" type="button"></a>
   </li>
 </template>
 
@@ -432,26 +427,6 @@
       return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
     }
 
-    static #fetchDuckDuckGoSuggestions(search) {
-      return new Promise((resolve) => {
-        window.autocompleteCallback = (res) => {
-          const suggestions = [];
-
-          for (const item of res) {
-            if (item.phrase === search.toLowerCase()) continue;
-            suggestions.push(item.phrase);
-          }
-
-          resolve(suggestions);
-        };
-
-        const script = document.createElement('script');
-        document.querySelector('head').appendChild(script);
-        script.src = `https://duckduckgo.com/ac/?callback=autocompleteCallback&q=${search}`;
-        script.onload = script.remove;
-      });
-    }
-
     static #formatSearchUrl(template, search) {
       return template.replace(/{}/g, encodeURIComponent(search));
     }
@@ -464,51 +439,58 @@
       return /^((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)$/i.test(s);
     }
 
-    static #getCommands(query) {
-      const { key, url, suggestions } = COMMANDS.get(query);
-      return { key, query, url, suggestions };
+    static #getCommand(query) {
+      let command = COMMANDS.get(query);
+      if (command) {
+        return { query: query, url: command.url, searchTemplate: command.searchTemplate };
+      }
+
+      if (!CONFIG.commandIsCaseSensitive) {
+        command = COMMANDS.get(query.toLowerCase());
+        if (command) {
+          return { query: query, url: command.url, searchTemplate: command.searchTemplate };
+        }
+
+      }
     }
 
     static #parseQuery = (raw) => {
       const query = raw.trim();
-      const altQuery = raw.trim().toLowerCase();
 
       if (this.#isUrl(query)) {
         const url = this.#hasProtocol(query) ? query : `https://${query}`;
         return { query, url };
       }
 
-      //prettier-ignore
-      if ((CONFIG.commandCaseSensitive || query == altQuery) && COMMANDS.has(query)) return this.#getCommands(query);
-      // in lowercase or case sensitive
-
-      // if (COMMANDS.has(query) && COMMANDS.has(altQuery)) return this.#getCommands(query); // IF needed to combine two commands like 'a' with 'A'
-
-      if (COMMANDS.has(altQuery)) return this.#getCommands(altQuery);
-      // in uppercase
+      let command = this.#getCommand(query);
+      if (command) return command;
 
       let splitBy = CONFIG.commandSearchDelimiter;
       const [searchKey, rawSearch] = query.split(new RegExp(`${splitBy}(.*)`));
+      command = this.#getCommand(searchKey);
 
-      if (COMMANDS.has(searchKey)) {
-        const command = COMMANDS.get(searchKey);
+      if (command) {
+        if (command.url && command.searchTemplate) {
         const template = new URL(command.searchTemplate ?? '', command.url);
         const search = rawSearch.trim();
         const url = Search.#formatSearchUrl(decodeURI(template.href), search);
-        return { key: searchKey, query, search, splitBy, url };
+          return { query, url };
+        }
       }
 
       splitBy = CONFIG.commandPathDelimiter;
       const [pathKey, path] = query.split(new RegExp(`${splitBy}(.*)`));
+      command = this.#getCommand(pathKey);
 
-      if (COMMANDS.has(pathKey)) {
-        const command = COMMANDS.get(pathKey);
+      if (command) {
+        if (command.url) {
         const url = `${new URL(command.url).origin}/${path}`;
-        return { key: pathKey, path, query, splitBy, url };
+          return { query, url };
+        }
       }
 
       const url = Search.#formatSearchUrl(CONFIG.defaultSearchTemplate, query);
-      return { query, search: query, url };
+      return { query, url };
     };
 
     #close() {
@@ -541,20 +523,14 @@
     #onInput = async () => {
       const oq = Search.#parseQuery(this.#input.value);
 
-      let suggestions = COMMANDS.get(oq.query)?.suggestions ?? [];
-
-      if (oq.search && suggestions.length < CONFIG.suggestionLimit) {
-        const res = await Search.#fetchDuckDuckGoSuggestions(oq.search);
-
-        suggestions = suggestions.concat(
-          oq.splitBy
-            ? res.map((search) => `${oq.key}${oq.splitBy}${search}`)
-            : res
-        );
+      let suggestions = Array.from(COMMANDS.keys()).filter((suggestion) => suggestion.startsWith(oq.query) && oq.query != suggestion && oq.query != "");
+      if (!CONFIG.commandIsCaseSensitive) {
+        suggestions = Array.from(COMMANDS.keys()).filter((suggestion) => suggestion.startsWith(oq.query.toLowerCase()) && oq.query.toLowerCase() != suggestion.toLowerCase() && oq.query.toLowerCase() != "");
       }
 
-      const nq = Search.#parseQuery(this.#input.value);
-      if (nq.query !== oq.query) return;
+      // const nq = Search.#parseQuery(this.#input.value);
+      // if (nq.query !== oq.query) return;
+
       this.#renderSuggestions(suggestions, oq.query);
     };
 
@@ -616,16 +592,18 @@
 
     #renderSuggestions(suggestions, query) {
       this.#suggestions.innerHTML = '';
-      const sliced = suggestions.slice(0, CONFIG.suggestionLimit);
+      // const sliced = suggestions.slice(0, CONFIG.suggestionLimit);
       const template = document.getElementById('suggestion-template');
 
-      for (const [index, suggestion] of sliced.entries()) {
+      for (const [index, suggestion] of suggestions.entries()) {
+        // for (const [index, suggestion] of sliced.entries()) {
         const clone = template.content.cloneNode(true);
         const ref = clone.querySelector('.suggestion');
         ref.dataset.index = index;
         ref.dataset.suggestion = suggestion;
-        if (COMMANDS.has(suggestion)) {
-          ref.href = COMMANDS.get(suggestion).url;
+        let command = Search.#getCommand(suggestion);
+        if (command) {
+          ref.href = command.url;
         } else ref.href = Search.#parseQuery(suggestion).url;
         const escapedQuery = Search.#escapeRegexCharacters(query);
         const matched = suggestion.match(new RegExp(escapedQuery, 'i'));
