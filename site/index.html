@@ -379,8 +379,8 @@
     }
   </style>
   <dialog class="dialog" open>
-    <form autocomplete="off" class="form" spellcheck="false">
-      <input class="input" title="search" type="text" />
+    <form class="form" novalidate>
+      <input class="input" title="search" type="url" />
       <menu class="suggestions"></menu>
     </form>
   </dialog>
@@ -471,9 +471,9 @@
 
       if (command) {
         if (command.url && command.searchTemplate) {
-        const template = new URL(command.searchTemplate ?? '', command.url);
-        const search = rawSearch.trim();
-        const url = Search.#formatSearchUrl(decodeURI(template.href), search);
+          const template = new URL(command.searchTemplate ?? '', command.url);
+          const search = rawSearch.trim();
+          const url = Search.#formatSearchUrl(decodeURI(template.href), search);
           return { query, url };
         }
       }
@@ -484,7 +484,7 @@
 
       if (command) {
         if (command.url) {
-        const url = `${new URL(command.url).origin}/${path}`;
+          const url = `${new URL(command.url).origin}/${path}`;
           return { query, url };
         }
       }
