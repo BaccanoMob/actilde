@@ -246,6 +246,24 @@
       const design = urlParams.get('design') || CONFIG.defaultDesign; // e.g., ?design=2 // [1,2] // default is 1
       // for using both queries => /?columns=3&design=2
 
+      const hash = window.location.hash.substring(1);
+      if (hash) {
+        const [searchKey, rawSearch] = decodeURI(hash).split(new RegExp(`${CONFIG.commandSearchDelimiter}(.*)`));
+        let shortcut = CONFIG.commandIsCaseSensitive ? COMMANDS.get(searchKey) : COMMANDS.get(searchKey.toLowerCase())
+
+        console.log(searchKey)
+        console.log(rawSearch)
+
+        if (shortcut) {
+          if (rawSearch && shortcut.searchTemplate) {
+            let newURL = new URL(shortcut.searchTemplate ?? '', shortcut.url)
+            location.href = newURL.href.replace(/{}/g, encodeURIComponent(rawSearch.trim()))
+          } else {
+            location.href = shortcut.url
+          }
+        }
+      }
+
       const template = document.getElementById('commands-template-v' + design);
       const clone = template.content.cloneNode(true);
       const commands = clone.querySelector('.commands');

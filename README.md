@@ -26,6 +26,7 @@ Actilde is a minimal browser homepage with a search box for mobile friendly sugg
 - PWA support (requires https and this came as an add-on to cache storage).
 - Uses query parameter to set number of columns in dashboard as well as the design. (check below on how to)
 - Suggestion are automatically taken from COMMANDS and duckduckgo suggestions are removed. Therefore, no need to manually specify the suggestions in this fork unlike original Tilde. Note that only the duckduckgo suggestions are removed, you can still search with duckduckgo for non COMMAND text.
+- Using hash fragment in the browser's address bar instead of using the search bar in actilde. (check below on how to)
 
 ## Cache First
 
@@ -150,6 +151,13 @@ Some examples on how to set:
     - <actilde_url> => default design and columns
 
 This is useful when you want to set the columns/design based on your device. For example, for mobile have lower columns via query and leave it the defaults.
+
+## Hash Fragments
+
+This fork now supports searching via hash fragments. For example, you host this at `https://example.tld` with `g` opening `https://github.com`, then running `https://example.tld#g` in the browser's address bar is the same as typing `g` in the search bar of actilde. This also supports searchTemplate but not pathTemplate at the moment. Note that you will not get suggestions if you use this method but you can navigate faster for the shortcuts you know or frequently use.
+
+> [!IMPORTANT]
+> You can not use hash fragments once the page is loaded in the current tab.
 
 ## To infinity ∞
 
